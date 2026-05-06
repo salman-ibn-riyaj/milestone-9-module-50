@@ -1,7 +1,15 @@
+"use client"
 import { Button, Table } from "@heroui/react";
 import Link from "next/link";
 
-const UsersTable = ({users}) => {
+import { AlertDialog} from "@heroui/react";
+const UsersTable = ({ users, userActionDelete }) => {
+
+  const handleDelete = async(userId) =>{
+
+    await userActionDelete(userId)
+    
+  }
   return (
     <div className="p-4">
       <Table>
@@ -14,26 +22,53 @@ const UsersTable = ({users}) => {
               <Table.Column>Actions</Table.Column>
             </Table.Header>
 
-
-
             <Table.Body>
-
-                {
-                    users.map(user => <Table.Row key={user._id}>
-                <Table.Cell>{user.name}</Table.Cell>
-                <Table.Cell>{user.email}</Table.Cell>
-                <Table.Cell>{user.role}</Table.Cell>
-                <Table.Cell>
-                    <Link href={`users/${user._id}`}><Button>Details</Button></Link>
-                    <Link href={`users/${user._id}`}><Button>Edit</Button></Link>
-                    <Link href={`users/${user._id}`}><Button variant="danger">Delete</Button></Link>
-
-                </Table.Cell>
-              </Table.Row>)
-                }
-              
-              
-              
+              {users.map((user) => (
+                <Table.Row key={user._id}>
+                  <Table.Cell>{user.name}</Table.Cell>
+                  <Table.Cell>{user.email}</Table.Cell>
+                  <Table.Cell>{user.role}</Table.Cell>
+                  <Table.Cell>
+                    <Link href={`users/${user._id}`}>
+                      <Button>Details</Button>
+                    </Link>
+                    <Link href={`users/${user._id}`}>
+                      <Button>Edit</Button>
+                    </Link>
+                    <AlertDialog>
+                      <Button variant="danger">Delete</Button>
+                      <AlertDialog.Backdrop>
+                        <AlertDialog.Container>
+                          <AlertDialog.Dialog className="sm:max-w-[400px]">
+                            <AlertDialog.CloseTrigger />
+                            <AlertDialog.Header>
+                              <AlertDialog.Icon status="danger" />
+                              <AlertDialog.Heading>
+                                Delete permanently?
+                              </AlertDialog.Heading>
+                            </AlertDialog.Header>
+                            <AlertDialog.Body>
+                              <p>
+                                This will permanently delete{" "}
+                                <strong>{user.name}</strong> and all of
+                                its data. This action cannot be undone.
+                              </p>
+                            </AlertDialog.Body>
+                            <AlertDialog.Footer>
+                              <Button slot="close" variant="tertiary">
+                                Cancel
+                              </Button>
+                              <Button onClick={()=>handleDelete(user._id)} slot="close" variant="danger">
+                               Confirm Delete
+                              </Button>
+                            </AlertDialog.Footer>
+                          </AlertDialog.Dialog>
+                        </AlertDialog.Container>
+                      </AlertDialog.Backdrop>
+                    </AlertDialog>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
             </Table.Body>
           </Table.Content>
         </Table.ScrollContainer>
